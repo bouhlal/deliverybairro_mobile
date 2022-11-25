@@ -83,7 +83,6 @@ export default function Header(props) {
 
   function GoToLink(link) {
     return (
-      ()=> {navigation.closeDrawer()},
       navigation.navigate(link)
     )
   }
