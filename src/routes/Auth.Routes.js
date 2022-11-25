@@ -1,5 +1,5 @@
 import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import SignIn from '../pages/User/SignIn';
 
@@ -7,7 +7,7 @@ import SignUp1 from '../pages/User/SignUp1';
 import SignUp2 from '../pages/User/SignUp2';
 import SignUp3 from '../pages/User/SignUp3';
 
-const AuthStack = createNativeStackNavigator();
+const AuthStack = createStackNavigator();
 
 export default function AuthRoutes() {
 
