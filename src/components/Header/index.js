@@ -34,6 +34,7 @@ export default function Header(props) {
 
   useEffect(() => {
     registerForPushNotificationsAsync().then(set_token => setExpoPushToken(set_token));
+    GetTOKEN(expoPushToken);
     notificationListener.current = Notifications.addNotificationReceivedListener(received_notification => {
       setNotification(received_notification);
     });
@@ -49,17 +50,6 @@ export default function Header(props) {
   }, [notification]);
 
   async function registerForPushNotificationsAsync() {
-    let usr_token;
-
-    if (Platform.OS === 'android') {
-      await Notifications.setNotificationChannelAsync('default', {
-        name: 'default',
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#4DCE4D',
-      });
-    }
-
     if (Device.isDevice) {
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
@@ -68,22 +58,28 @@ export default function Header(props) {
         finalStatus = status;
       }
       if (finalStatus !== 'granted') {
-        alert('Failed to get push token for push notification!');
+        alert('Falha ao obter Token push para notificação push!');
         return;
       }
-      usr_token = (await Notifications.getExpoPushTokenAsync()).data;
-      // console.log('token registrado: ',usr_token);
-      GetTOKEN(usr_token);
+      const usr_token = (await Notifications.getExpoPushTokenAsync()).data;
+      // console.log('token: ',usr_token);
+      setExpoPushToken({usr_token});
     } else {
-      alert('Must use physical device for Push Notifications');
+      alert('É necessário um dispositivo físico para notificações push');
     }
 
-    return usr_token;
-  }
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#4DCE4D',
+      });
+    }
+  };
 
   function GoToLink(link) {
     return (
-      // ()=>{navigation.closeDrawer()},
       navigation.navigate(link)
     )
   }

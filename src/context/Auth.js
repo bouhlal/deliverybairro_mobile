@@ -13,7 +13,18 @@ function AuthProvider({ children }) {
   const [notify, setNotify] = useState('');
 
   function GetTOKEN(usr_token) {
+    let data = {
+      uid: user.uid,
+      email: user.email,
+      id_cliente: user.id_cliente,
+      nome: user.nome,
+      sobrenome: user.sobrenome,
+      token: usr_token
+    }
+    console.log(data);
+    storageUser(data);
     setToken(usr_token);
+    setUser(data);
   }
 
   function GetNOTIFICATION(notification) {
@@ -47,7 +58,7 @@ function AuthProvider({ children }) {
           sobrenome: snapshot.val().sobrenome,
           token: snapshot.val().token
         }
-        console.log(data);
+        // console.log(data);
         storageUser(data);
         setUser(data);
       })
