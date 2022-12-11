@@ -2,7 +2,6 @@ import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar, LogBox } from 'react-native';
 
-
 LogBox.ignoreLogs(['AsyncStorage has been extracted from react-native core and will be removed in a future release.']);
 LogBox.ignoreLogs(['Warning: Async Storage has been extracted from react-native core']);
 
