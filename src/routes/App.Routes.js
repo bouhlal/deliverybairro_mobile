@@ -9,7 +9,7 @@ import Home from '../pages/Home';
 import Deliverys from '../pages/Deliverys';
 import Produtos from '../pages/Produtos';
 import Pedidos from '../pages/Pedidos';
-import MyCart from '../pages/MyCart';
+import Cesta from '../pages/Cesta';
 import Perfil from '../pages/Perfil';
 
 import SideBar from '../components/SideBar';
@@ -69,7 +69,7 @@ export default function AppRoutes() {
       switch (routeName) {
         case 'Home': return 'Categorias (Home)';
         case 'Deliverys': return 'Deliverys (Perto de Você)'
-        case 'MyCart': return 'Carrinho de Compras';
+        case 'Cesta': return 'Cesta de Compras';
         case 'Perfil': return 'Perfil (Usuário)';
       }
     };
@@ -173,8 +173,8 @@ export default function AppRoutes() {
       />
 
       <Stack.Screen
-        name="MyCart"
-        component={ MyCart }
+        name="Cesta"
+        component={ Cesta }
         options={() => ({
           headerShown: true,
           headerTitle: 'Carrinho de Compras',

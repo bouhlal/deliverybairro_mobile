@@ -47,8 +47,8 @@ export default function CartProvider({ children }) {
   }
 
   function setCartTotal(items) {
-    let myCart = items;
-    let result = myCart.reduce((acc, obj) => { return acc + obj.vr_total}, 0)
+    let cesta = items;
+    let result = cesta.reduce((acc, obj) => { return acc + obj.vr_total}, 0)
     setSubTotal(result.toFixed(2));
   }
 

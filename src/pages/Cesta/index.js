@@ -8,7 +8,7 @@ import CardItem from '../../components/Card';
 
 import api from '../../services/api';
 
-export default function MyCart() {
+export default function Cesta() {
   const navigation = useNavigation();
   const { cart, info, subtotal, cleanCart, AddToCart, RemoveFromCart } = useContext(CartContext);
   const { user, token, GetTOKEN } = useContext(AuthContext);

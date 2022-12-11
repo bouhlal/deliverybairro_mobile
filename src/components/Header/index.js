@@ -93,9 +93,11 @@ export default function Header(props) {
       <View style={styles.header}>
         <TouchableOpacity 
           onPress={()=> {
-            if (token==='' || !token) { ()=>{GetTOKEN(user.token)} }
-            alert('DeliveryBairro App v1.0 Build #19 ' + '\n' + 'psi-software (31) 98410-7540 ' + '\n' + token);
-            GoToLink('Pedidos');
+            if (token ==='' || !token) {
+              registerForPushNotificationsAsync();
+              alert('DeliveryBairro App v1.0 Build #19 ' + '\n' + 'psi-software (31) 98410-7540 ' + '\n' + token);
+              GoToLink('Pedidos');
+            }
           }}
         >
           <Image source={logo} style={{ width: 85, height: 85 }} resizeMode="contain" />
@@ -104,7 +106,7 @@ export default function Header(props) {
           <Image source={logomarca} style={{ width: 195, height: 85 }} resizeMode="contain" />
         </View>
 
-        <TouchableOpacity onPress={()=>GoToLink('MyCart')}>
+        <TouchableOpacity onPress={()=>GoToLink('Cesta')}>
           <Image source={sacola} style={{ width: 85, height: 85 }} resizeMode="contain" />
           { cart.length >= 1 &&
             <View style={styles.dot}>
