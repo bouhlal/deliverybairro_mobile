@@ -22,7 +22,11 @@ npm install -g eas-cli
 expo prebuild
 
 ## deployment
-eas build -p android --profile preview
+<strong>eas build -p android --profile preview</strong>
+
+## Using FCM for Push Notifications
+See at https://docs.expo.dev/push-notifications/using-fcm/
+Finally, make a new build of your app by <strong>running eas build --platform android</strong> (or <strong>expo build:android<strong> if you're using the classic build system).
 
 ## Link para baixar o APK DeliveryBairro v1.0 (MVP) Build #1 (Quinta-feira, 27/10/2022 às 12:07)
 https://expo.dev/artifacts/eas/fByfzoZUQava4UaUjLChQa.apk

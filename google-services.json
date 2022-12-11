@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "118623960431",
+    "firebase_url": "https://deliverybairro-app-d259e-default-rtdb.firebaseio.com",
+    "project_id": "deliverybairro-app-d259e",
+    "storage_bucket": "deliverybairro-app-d259e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:118623960431:android:c14bce16edbb08c9e87c9a",
+        "android_client_info": {
+          "package_name": "com.psi.deliverybairro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "118623960431-2sehp7shaei5a8cr2mgkcef96ea1ebah.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6YSUb6L47sKu1ykiKFSsfdTfJNmhlgx4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "118623960431-2sehp7shaei5a8cr2mgkcef96ea1ebah.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
