@@ -11,7 +11,7 @@ import api from '../../services/api';
 export default function Cesta() {
   const navigation = useNavigation();
   const { cart, info, subtotal, cleanCart, AddToCart, RemoveFromCart } = useContext(CartContext);
-  const { user, token, GetTOKEN } = useContext(AuthContext);
+  const { user, usr_token, GetTOKEN } = useContext(AuthContext);
   const [ total, setTotal ] = useState(0);
 
   useEffect(() => {
@@ -21,10 +21,8 @@ export default function Cesta() {
 
   async function EnviarPedido() {
 
-    if (token ==='' || !token) {
-      alert('Erro! Verifique o Token de Usuário: ', token);
-      GetTOKEN(user.token);
-      alert('Token atualizado! '+'\\n'+token);
+    if (usr_token ==='' || !usr_token) {
+      alert('Erro! Verifique o Token de Usuário: ', usr_token);
       return;
     }
 
@@ -34,7 +32,7 @@ export default function Cesta() {
       "vr_subtotal": parseFloat(subtotal).toFixed(2),
       "vr_taxaentrega": parseFloat(info.taxa).toFixed(2),
       "vr_total": parseFloat(total).toFixed(2),
-      "token": token,
+      "token": usr_token,
       "itens": cart
     }
     console.log(json);

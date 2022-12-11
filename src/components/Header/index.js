@@ -25,28 +25,35 @@ export default function Header(props) {
   const navigation = useNavigation();
 
   const { cart } = useContext(CartContext);
-  const { user, token, GetTOKEN, GetNOTIFICATION} = useContext(AuthContext);
+  const { usr_token, GetTOKEN, GetNOTIFICATION } = useContext(AuthContext);
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(null);
 
-  const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(set_token => setExpoPushToken(set_token));
-    GetTOKEN(expoPushToken);
-    notificationListener.current = Notifications.addNotificationReceivedListener(received_notification => {
-      setNotification(received_notification);
-    });
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response.notification.request.content.body);
-    });
+    registerForPushNotificationsAsync().then((token) => setExpoPushToken(token));
+    
+    // avisa a aplicação que chegou uma nova notificação
+    notificationListener.current = Notifications.addNotificationReceivedListener(
+      (new_notification) => {
+        setNotification(new_notification);
+      }
+    );
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        console.log(response.notification.request.content.body)
+      }
+    );
+
     return () => {
       Notifications.removeNotificationSubscription(notificationListener.current);
       Notifications.removeNotificationSubscription(responseListener.current);
       GetNOTIFICATION(notification);
       GoToLink('Pedidos');
-    };
+  };
   }, [notification]);
 
   async function registerForPushNotificationsAsync() {
@@ -61,9 +68,10 @@ export default function Header(props) {
         alert('Falha ao obter Token push para notificação push!');
         return;
       }
-      const usr_token = (await Notifications.getExpoPushTokenAsync()).data;
-      // console.log('token: ',usr_token);
-      setExpoPushToken({usr_token});
+      const token = (await Notifications.getExpoPushTokenAsync()).data;
+      // console.log('token gerado: ', token);
+      setExpoPushToken(token); 
+      GetTOKEN(token);
     } else {
       alert('É necessário um dispositivo físico para notificações push');
     }
@@ -89,11 +97,8 @@ export default function Header(props) {
       <View style={styles.header}>
         <TouchableOpacity 
           onPress={()=> {
-            if (token ==='' || !token) {
-              registerForPushNotificationsAsync();
-              alert('DeliveryBairro App v1.0 Build #19 ' + '\n' + 'psi-software (31) 98410-7540 ' + '\n' + token);
-              GoToLink('Pedidos');
-            }
+            console.log('token do usuário: ', expoPushToken);
+            alert('DeliveryBairro App v1.0 Build #19 ' + '\n' + 'psi-software (31) 98410-7540 ' + '\n' + usr_token);
           }}
         >
           <Image source={logo} style={{ width: 85, height: 85 }} resizeMode="contain" />

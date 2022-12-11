@@ -9,22 +9,22 @@ export const AuthContext = createContext({});
 function AuthProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState('');
+  const [usr_token, setUsrToken] = useState('');
   const [notify, setNotify] = useState('');
 
-  function GetTOKEN(usr_token) {
-    let data = {
-      uid: user.uid,
-      email: user.email,
-      id_cliente: user.id_cliente,
-      nome: user.nome,
-      sobrenome: user.sobrenome,
-      token: usr_token
-    }
-    console.log(data);
-    storageUser(data);
-    setToken(usr_token);
-    setUser(data);
+  function GetTOKEN(token) {
+    // let data = {
+    //   uid: user.uid,
+    //   email: user.email,
+    //   id_cliente: user.id_cliente,
+    //   nome: user.nome,
+    //   sobrenome: user.sobrenome,
+    //   token: usr_token
+    // }
+    // console.log(data);
+    // setUser(data);
+    // storageUser(data);
+    setUsrToken(token);
   }
 
   function GetNOTIFICATION(notification) {
@@ -127,7 +127,7 @@ function AuthProvider({ children }) {
 
   return(
     <AuthContext.Provider value={{ 
-      signed: !!user, user, loading, token, notify,
+      signed: !!user, user, loading, usr_token, notify,
       signIn, signUp, signOut, GetTOKEN, GetNOTIFICATION
     }}>
       { children }
