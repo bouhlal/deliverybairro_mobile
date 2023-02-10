@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, FlatList, TouchableOpacity, SafeAreaView, ActivityIndicator, StyleSheet } from 'react-native';
-import { Fontisto } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { DataStore } from "aws-amplify";
 import { Delivery } from "../../models";
@@ -10,10 +9,18 @@ import Header from '../../components/Header';
 export default function Deliveries({ route }) {
   const navigation = useNavigation();
   const [deliveries, setDeliveries] = useState([]);
+
   const DEFAULT_IMAGE = "https://deliverybairro-storage-25990171215340-staging.s3.amazonaws.com/images/sem-imagem.png";
 
   useEffect(() => {
-    DataStore.query(Delivery, (delivery) => delivery.id.eq(route.params.id)).then(setDeliveries);
+    (async function() {
+      try {
+        DataStore.query(Delivery, (delivery) => delivery.Categoria.eq(route.params.id));
+        setDeliveries(lista);
+      } catch(error) {
+        console.error("Error (query: Categoria): ", error);
+      }
+    })();
   }, [route.params.id]);
 
   function LinkTo(page, p) {
@@ -58,7 +65,7 @@ export default function Deliveries({ route }) {
         <Text style={styles.title}>{route.params.descricao}</Text>
         <FlatList
           data={deliveries}
-          keyExtractor={(delivery)=>String(delivery.id)}
+          keyExtractor={(delivery) => delivery.id}
           renderItem={({delivery}) => <DeliveryCard delivery={delivery} />}
           ListEmptyComponent={() => <Text style={styles.empty}>Ainda não há Deliveries cadastrados nesta categoria.</Text>}
           showsVerticalScrollIndicator={true}

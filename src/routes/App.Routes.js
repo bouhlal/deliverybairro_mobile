@@ -67,10 +67,10 @@ export default function AppRoutes() {
     const getHeaderTitle = (route) => {
       const routeName = getFocusedRouteNameFromRoute(route) ?? 'Home';
       switch (routeName) {
-        case 'Home': return 'Categorias (Home)';
-        case 'Deliveries': return 'Deliverys (Perto de Você)'
-        case 'Pedidos': return 'Meus Pedidos';
-        case 'Perfil': return 'Perfil (Usuário)';
+        case "Home": return "Categoria";
+        case "Deliveries": return "Delivery";
+        case "Pedidos": return "Pedidos";
+        case "Perfil": return "Perfil";
       }
     };
 
