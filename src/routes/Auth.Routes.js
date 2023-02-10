@@ -2,10 +2,8 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import SignIn from '../pages/User/SignIn';
-
-import SignUp1 from '../pages/User/SignUp1';
-import SignUp2 from '../pages/User/SignUp2';
-import SignUp3 from '../pages/User/SignUp3';
+import SignUp from '../pages/User/SignUp';
+import SignUpCode from '../pages/User/SignUpCode';
 
 const AuthStack = createStackNavigator();
 
@@ -21,11 +19,11 @@ export default function AuthRoutes() {
       />
 
       <AuthStack.Screen 
-        name="SignUp1" 
-        component={SignUp1}
+        name="SignUp" 
+        component={SignUp}
         options={{
           headerStyle:{
-            backgroundColor: 'teal',
+            backgroundColor: '#000',
             borderBottomWidth: 0,
           },
           headerTintColor: '#FFF',
@@ -35,25 +33,11 @@ export default function AuthRoutes() {
       />
 
       <AuthStack.Screen 
-        name="SignUp2" 
-        component={SignUp2}
+        name="SignUpCode" 
+        component={SignUpCode}
         options={{
           headerStyle:{
-            backgroundColor: 'teal',
-            borderBottomWidth: 0,
-          },
-          headerTintColor: '#FFF',
-          headerBackTitleVisible: false,
-          headerTitle: 'Voltar',
-        }}
-      />
-
-      <AuthStack.Screen 
-        name="SignUp3" 
-        component={SignUp3}
-        options={{
-          headerStyle:{
-            backgroundColor: 'teal',
+            backgroundColor: '#000',
             borderBottomWidth: 0,
           },
           headerTintColor: '#FFF',

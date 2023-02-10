@@ -1,47 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, FlatList, TouchableOpacity, SafeAreaView, ActivityIndicator, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { DataStore } from 'aws-amplify';
+import { Categoria } from '../../models';
 
 import Header from '../../components/Header';
-import noImage from '../../../assets/sem-imagem.jpg';
-import api from '../../services/api';
 
 export default function Home() {
   const navigation = useNavigation();
-  const [loading, setLoading] = useState(false);
   const [categorias, setCategorias] = useState([]);
 
   useEffect(() => {
-    loadCategorias();
+    (async function() {
+      try {
+        const result = await DataStore.query(Categoria);
+        setCategorias(result);
+        console.log("categorias: ", categorias);
+      } catch (error) {
+        console.error("Error (query: Categoria): ", error);
+      }
+    })();
   }, []);
-
-  async function loadCategorias() {
-    setLoading(true);
-    await api.get('/listar/categorias')
-    .then((response) => {
-      updateCategorias(response.data);
-      setLoading(false);
-    }).catch(error => {
-      console.log('ERROR: ' + error);
-    })
-    setLoading(false);
-  }
-
-  function updateCategorias(items) {
-    setCategorias([]);
-    items?.forEach((items) => {
-      let data = {
-        id_categoria: items.id_categoria,
-        descricao: items.descricao,
-        url_imagem: (items.url_imagem === null ? Image.resolveAssetSource(noImage).uri : items.url_imagem),
-        ordem: items.ordem,
-      };
-      setCategorias(newArray => [...newArray, data]);
-    });
-  }
 
   function LinkTo(page, p) {
     navigation.navigate(page, p);
+  }
+
+  if (!categorias) {
+    return (
+      <View style={styles.indicator}>
+        <ActivityIndicator size={"large"} color="#4DCE4D" />
+      </View>
+    )
   }
 
   return (
@@ -52,10 +42,10 @@ export default function Home() {
         <FlatList
           data={categorias}
           showsVerticalScrollIndicator={true}
-          keyExtractor={(item) => String(item.id_categoria)}
-          renderItem={({item}) => (
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
             <View>
-              <TouchableOpacity onPress={()=>LinkTo('Deliverys', { id: item.id_categoria, categoria: item.descricao })}>
+              <TouchableOpacity onPress={()=>LinkTo('Deliveries', { id: item.id, descricao: item.descricao })}>
                 <View style={styles.card}>
                   <Image source={{ uri: item.url_imagem }} style={styles.imagem} />
                   <Text style={styles.label}>{item.descricao}</Text>
@@ -65,12 +55,6 @@ export default function Home() {
           )}
         />
       </View>
-      { 
-        loading && 
-        <View style={{flex:1, position: 'absolute', backgroundColor: '#000', opacity: 0.7, width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center'}}>
-          <ActivityIndicator size={50} color='#4DCE4D' />
-        </View>
-      }
     </SafeAreaView>
   );
 }
@@ -96,12 +80,25 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1
   },
   label:{
-    fontSize: 21,
-    fontWeight: 'bold'
+    fontSize: 18,
+    fontWeight: 'bold',
+    width: "70%"
   },
   imagem:{
     width: 100,
     height: 100,
     margin: 5
+  },
+  indicator:{
+    flex:1, 
+    position: 'absolute', 
+    backgroundColor: '#000', 
+    opacity: 0.7, 
+    width: '100%', 
+    height: '100%', 
+    alignItems: 'center', 
+    justifyContent: 'center'
   }
 })
+
+// console.warn("lista está vazia...");

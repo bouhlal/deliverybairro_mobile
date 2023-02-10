@@ -7,15 +7,16 @@ import { AuthContext } from '../../context/Auth';
 import logo from '../../../assets/logo.png';
 import marca from '../../../assets/logomarca.png';
 
-export default function SignInCode() {
+export default function SignUpCode({ route }) {
   const navigation = useNavigation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');  
+  
+  const [username, setUsername] = useState(route.params?.username);
+  const [code, setCode] = useState('');  
 
-  const { signIn, loading } = useContext(AuthContext);
-
-  function login() {
-    signIn(email, password);
+  const { confirmSignUp, resendConfirmationCode, loading } = useContext(AuthContext);
+  
+  function SendCode() {
+    confirmSignUp(username, code);
   }
 
   return (
@@ -27,40 +28,29 @@ export default function SignInCode() {
 
         <AreaInput>
           <Input
-            placeholder='Email'
-            autoCorrect={false}
-            autoCapitalize='none'
-            value={email}
-            onChangeText={(text)=>setEmail(text)}
-          />
-        </AreaInput>
-
-        <AreaInput>
-          <Input
-            placeholder='Senha'
+            placeholder='------'
             autoCorrect={false}
             autoCapitalize='none'
             keyboardType='numeric'
-            value={password}
-            onChangeText={(text)=>setPassword(text)}
-            secureTextEntry={true}
+            value={code}
+            onChangeText={(text)=>setCode(text)}
           />
         </AreaInput>
 
-        <BtnSubmit onPress={login}>
+        <BtnSubmit onPress={SendCode}>
           {
             loading ? (
               <View style={styles.indicator}>
                 <ActivityIndicator size={"large"} color="#000" />
               </View>
             ) : (
-              <BtnTxt>Acessar</BtnTxt>
+              <BtnTxt>ENVIAR CÓDIGO</BtnTxt>
             )
           }
         </BtnSubmit>
 
-        <Link onPress={() => navigation.navigate('SignUp')}>
-          <LinkTxt>Ainda não possui Conta? Junte-se a Nós!</LinkTxt>
+        <Link onPress={() => resendConfirmationCode}>
+          <LinkTxt>Reenviar Código de Confirmação?</LinkTxt>
         </Link>
 
       </Container>

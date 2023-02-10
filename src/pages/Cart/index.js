@@ -1,51 +1,78 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
+import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../context/Auth';
 import { CartContext } from '../../context/Cart';
-import { useNavigation } from '@react-navigation/native';
+
+import { DataStore } from "aws-amplify";
+import { Pedido, Item } from "../../models";
+
 
 import CardItem from '../../components/Card';
 
-import api from '../../services/api';
-
-export default function Cesta() {
+export default function Cart() {
   const navigation = useNavigation();
-  const { cart, info, subtotal, cleanCart, AddToCart, RemoveFromCart } = useContext(CartContext);
-  const { user, usr_token, GetTOKEN } = useContext(AuthContext);
+  const { cart, delivery, basket, basketItens, subtotal, setDelivery, cleanCart, AddToCart, RemoveFromCart } = useContext(CartContext);
+  const { user } = useContext(AuthContext);
+  const [ courier, setCourier] = useState(null); 
+  const [ notificationId, setNotificationId ] = useState([]);
   const [ total, setTotal ] = useState(0);
 
   useEffect(() => {
-    let soma = parseFloat(subtotal) + parseFloat(info.taxa);
+    let soma = parseFloat(subtotal) + parseFloat(delivery.taxa);
     setTotal(soma);
   }, [subtotal]);
 
+  useEffect(() => {
+    // pegar permissão para enviar notificações
+    const askPermission = async () => {
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      if (status === 'granted') {
+        console.log('Permissão concedida para enviar notificações');
+      }
+    };
+    askPermission();
+  }, [])
+
   async function EnviarPedido() {
+    // criar um ID para novo pedido
+    const notificationId = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Novo pedido criado',
+        body: 'Seu pedido está aguardando',
+      },
+    });
+    setNotificationId(notificationId);
+    console.log("Token SMS: ", notificationId);
 
-    if (usr_token ==='' || !usr_token) {
-      alert('Erro! Verifique o Token de Usuário: ', usr_token);
-      return;
-    }
-
-    let json = {
-      "id_conta": info.id,
-      "id_cliente": user.id_cliente,
-      "vr_subtotal": parseFloat(subtotal).toFixed(2),
-      "vr_taxaentrega": parseFloat(info.taxa).toFixed(2),
-      "vr_total": parseFloat(total).toFixed(2),
-      "token": usr_token,
-      "itens": cart
-    }
-    console.log(json);
-    await api.post('/pedidos/add', json)
-    .then((response) => {
-      console.log(response.data);
-      alert('Pedido enviado com sucesso! #' + response.data.id_pedido);
+    await DataStore.save(
+      new Pedido({
+        "dt_pedido": new Date(),
+        "vr_subtotal": parseFloat(subtotal).toFixed(2),
+        "vr_taxaentrega": parseFloat(delivery.taxa).toFixed(2),
+        "vr_total": parseFloat(total).toFixed(2),
+        "status": Status.NOVO,
+        "token_sms": notificationId,
+        "clienteID": user.id,
+        "Items": cart,
+        "Delivery": delivery, /* Provide a Delivery instance here */
+        "Courier": courier /* Provide a Courier instance here */
+      })
+    ).then((pedido) => {
+      alert('Pedido enviado com sucesso! #' + pedido.id);
+      console.log(pedido);
       cleanCart();
       GoToLink('Pedidos');
     }).catch(error => {
       console.log('ERROR: ' + error);
     })
   }
+
+  // function EnviarPedido() {
+  //   Alert.alert("Envia pedido para o Delivery...")
+  // }
 
   function CancelarPedido() {
     cleanCart();
@@ -72,7 +99,7 @@ export default function Cesta() {
       <FlatList
         data={cart}
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item)=>String(item.id_produto)}
+        keyExtractor={(item)=>String(item.id)}
         ListEmptyComponent={() => <Text style={styles.empty}>Carrinho de Compras vazio!</Text>}
         renderItem={({item})=>(
           <CardItem
@@ -86,6 +113,7 @@ export default function Cesta() {
             <Text style={styles.subtotal}>Sub-Total: R$ {parseFloat(subtotal).toFixed(2)}</Text>
             <Text style={styles.taxa}>Taxa de Entrega: R$ {parseFloat(info.taxa).toFixed(2)}</Text>
             <Text style={styles.total}>Total: R$ {parseFloat(total).toFixed(2)}</Text>
+            <Text>ID da notificação: {notificationId}</Text>
           </View>
         )}
       />

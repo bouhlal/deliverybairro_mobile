@@ -25,7 +25,7 @@ export default function Header(props) {
   const navigation = useNavigation();
 
   const { cart } = useContext(CartContext);
-  const { usr_token, GetTOKEN, GetNOTIFICATION } = useContext(AuthContext);
+  const { usr_token, GetTokenSMS, GetNotificationSMS } = useContext(AuthContext);
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(null);
 
@@ -51,7 +51,7 @@ export default function Header(props) {
     return () => {
       Notifications.removeNotificationSubscription(notificationListener.current);
       Notifications.removeNotificationSubscription(responseListener.current);
-      GetNOTIFICATION(notification);
+      GetNotificationSMS(notification);
       GoToLink('Pedidos');
   };
   }, [notification]);
@@ -71,7 +71,7 @@ export default function Header(props) {
       const token = (await Notifications.getExpoPushTokenAsync()).data;
       // console.log('token gerado: ', token);
       setExpoPushToken(token); 
-      GetTOKEN(token);
+      GetTokenSMS(token);
     } else {
       alert('É necessário um dispositivo físico para notificações push');
     }
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     }
     let usr_token = await Notifications.getExpoPushTokenAsync()
     console.log('token registrado: ',usr_token);
-    GetTOKEN(usr_token);
+    GetTokenSMS(usr_token);
   }
 
   async function registerForPushNotificationsAsync() {
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
       }
       usr_token = (await Notifications.getExpoPushTokenAsync()).data;
       console.log('token registrado: ', usr_token);
-      GetTOKEN(usr_token);
+      GetTokenSMS(usr_token);
     } else {
       alert('Must use physical device for Push Notifications');
     }

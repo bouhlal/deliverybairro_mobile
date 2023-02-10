@@ -1,138 +1,122 @@
-import React, { useState, useEffect, createContext } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import api from '../services/api';
-import firebase from '../services/config';
+import React, { useState, createContext } from 'react';
+import { Alert } from 'react-native';
+import { Auth, Hub } from "aws-amplify";
 
 export const AuthContext = createContext({});
 
-function AuthProvider({ children }) {
+export default function AuthProvider({ children }) {
   const [loading, setLoading] = useState(false);
+  const [cliente, setCliente] = useState(null);
+  // const [user_authorized, setAuthorized] = useState(null);
   const [user, setUser] = useState(null);
-  const [usr_token, setUsrToken] = useState('');
-  const [notify, setNotify] = useState('');
 
-  function GetTOKEN(token) {
-    // let data = {
-    //   uid: user.uid,
-    //   email: user.email,
-    //   id_cliente: user.id_cliente,
-    //   nome: user.nome,
-    //   sobrenome: user.sobrenome,
-    //   token: usr_token
-    // }
-    // console.log(data);
-    // setUser(data);
-    // storageUser(data);
-    setUsrToken(token);
-  }
+  // const token_sms = user?.attributes?.token_sms; 
+  // console.warn("token_sms: ", token_sms);
 
-  function GetNOTIFICATION(notification) {
-    setNotify(notification);
-  }
-
-  useEffect(() => {
-    async function loadStorage() {
-      const storageUser = await AsyncStorage.getItem('Auth_user');
-      if (storageUser) {
-        setUser(JSON.parse(storageUser));
+  function listenToAutoSignInEvent() {
+    Hub.listen('auth', ({ payload }) => {
+      const { event } = payload;
+      if (event === 'autoSignIn') {
+          const user = payload.data;
+          // assign user
+      } else if (event === 'autoSignIn_failure') {
+          // redirect to sign in page
       }
-    }
-    loadStorage();
-  }, []);
-
-  // Logar o Usuário
-
+    })
+  }
+  
   async function signIn(email, password) {
     setLoading(true);
-    console.log(email, password);
-    firebase.auth().signInWithEmailAndPassword(email, password)
-    .then(async(value) => {
-      await firebase.database().ref('users').child(value.user.uid).once('value')
-      .then((snapshot) => {
-        let data = {
-          uid: value.user.uid,
-          email: value.user.email,
-          id_cliente: snapshot.val().id_cliente,
-          nome: snapshot.val().nome,
-          sobrenome: snapshot.val().sobrenome,
-          token: snapshot.val().token
-        }
-        // console.log(data);
-        storageUser(data);
-        setUser(data);
-      })
-    }).catch((error) => {
-      alert('Error: '+error.code);
-    })
-    setLoading(false);
-  }
-
-  // Cadastrar Usuário
-
-  async function signUp(nome, sobrenome, endereco, complemento, bairro, cidade, UF, CEP, telefone, email, password) {
-    setLoading(true);
-    const json = {
-      "id_cliente": null, 
-      "nome": nome, "sobrenome": sobrenome,
-      "endereco": endereco, "complemento": complemento, "bairro": bairro, "cidade": cidade, "uf": UF, "cep": CEP,
-      "telefone": telefone, "email": email, 
-      "cnpj": "", "cpf": "", "token": token
+    try {
+      const user_login = await Auth.signIn({username: email, password: password});
+      setUser(user_login);
+      console.log("usuário logado: ", user);
+    } catch (error) {
+        console.log('Error (signIn): ', error);
     }
-    await api.post('/cliente/add/', json).then(response => {
-      console.log(response);
-      firebase.auth().createUserWithEmailAndPassword(email, password)
-      .then(async (value) => {
-          let uid = value.user.uid;
-          await firebase.database().ref('users').child(uid).set({
-            nome: json.nome,
-            sobrenome: json.sobrenome,
-            id_cliente: response.val().id_cliente,
-            token: response.val().token
-          }).then((snapshot) => {
-            let data = {
-              uid: value.user.uid,
-              email: value.user.email,
-              id_cliente: snapshot.val().id_cliente,
-              nome: snapshot.val().nome,
-              sobrenome: snapshot.val().sobrenome,
-              token: snapshot.val().token
-            };
-            setUser(data);
-            storageUser(data);
-            console.log(data);
-          }).catch((error) => {
-            console.log('ERROR: ' + error);
-          })
-      }).catch(error => {
-        console.log('ERROR: ' + error);
-      })
-    });
-
     setLoading(false);
   }
 
-  async function storageUser(data) {
-    await AsyncStorage.setItem('Auth_user', JSON.stringify(data));
+  async function signUp( email, password ) {
+    setLoading(true);
+    try {
+      const { user } = await Auth.signUp({ 
+        username: email, 
+        password: password,
+        autoSignIn: { // optional - enables auto sign in after user is confirmed
+          enabled: true,
+        }
+      }).then(setUser(user));
+      console.log("user:", user)
+    } catch (error) {
+      console.error('Error (singUp): ', error);
+    }
+    setLoading(false);
   }
 
-  // Deslogar Usuário
+  async function confirmSignUp(username, code) {
+    try {
+      await Auth.confirmSignUp(username, code, { forceAliasCreation: false });
+    } catch (error) {
+      console.log('Error (Confirming signUp): ', error);
+    }
+  }
+
+  async function resendConfirmationCode() {
+      try {
+        await Auth.resendSignUp(username);
+        Alert.alert("Info","Código reenviado com sucesso!");
+        console.log('code resent successfully');
+      } catch (error) {
+        console.log('Error (resending code): ', error);
+      }
+  }
 
   async function signOut() {
-    await firebase.auth().signOut();
-    await AsyncStorage.clear().then(() => {
-      setUser(null);
-    })
+    try {
+      await Auth.signOut();
+    } catch (error) {
+      console.error('Error (signOut): ', error);
+    } 
   }
 
   return(
     <AuthContext.Provider value={{ 
-      signed: !!user, user, loading, usr_token, notify,
-      signIn, signUp, signOut, GetTOKEN, GetNOTIFICATION
+      signed: !!user, user, loading, cliente, //token_sms, 
+      signIn, signUp, confirmSignUp, resendConfirmationCode, listenToAutoSignInEvent, signOut
     }}>
       { children }
     </AuthContext.Provider> 
   )
 }
 
-export default AuthProvider;
+  // import { DataStore } from "aws-amplify";
+  // import { Cliente } from "../models";
+
+  // await DataStore.save(new Cliente({
+  //   "nome": "", 
+  //   "sobrenome": "", 
+  //   "telefone": "", 
+  //   "email": email,
+  //   "endereco": {}, 
+  //   "uf": "UF.MG", 
+  //   "marcador": {},
+  //   "cpf": "", 
+  //   "cnpj": "", 
+  //   "url_foto": "https://deliverybairro-storage-25990171215340-staging.s3.amazonaws.com/images/sem-imagem.png",
+  //   "Baskets": [], 
+  //   "Pedidos": [],
+  //   "token_sms": ""
+  // }).then(setCliente));
+
+  // console.log("cliente: ", cliente);
+
+  // useEffect(() => {
+  //   Auth.currentAuthenticatedUser({ bypassCache: true }).then(setAuthorized);
+  // }, [])
+
+  // useEffect(() => {
+  //   DataStore.query(Cliente, (cliente) => cliente.token_sms.eq(token_sms)).then((clientes) =>
+  //     setUser(clientes[0])
+  //   );
+  // }, [token_sms]);
