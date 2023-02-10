@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react';
-import * as Notifications from 'expo-notifications';
-import * as Permissions from 'expo-permissions';
 import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../context/Auth';
@@ -9,7 +7,6 @@ import { CartContext } from '../../context/Cart';
 import { DataStore } from "aws-amplify";
 import { Pedido, Item } from "../../models";
 
-
 import CardItem from '../../components/Card';
 
 export default function Cart() {
@@ -17,7 +14,6 @@ export default function Cart() {
   const { cart, delivery, basket, basketItens, subtotal, setDelivery, cleanCart, AddToCart, RemoveFromCart } = useContext(CartContext);
   const { user } = useContext(AuthContext);
   const [ courier, setCourier] = useState(null); 
-  const [ notificationId, setNotificationId ] = useState([]);
   const [ total, setTotal ] = useState(0);
 
   useEffect(() => {
@@ -25,27 +21,7 @@ export default function Cart() {
     setTotal(soma);
   }, [subtotal]);
 
-  useEffect(() => {
-    // pegar permissão para enviar notificações
-    const askPermission = async () => {
-      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-      if (status === 'granted') {
-        console.log('Permissão concedida para enviar notificações');
-      }
-    };
-    askPermission();
-  }, [])
-
   async function EnviarPedido() {
-    // criar um ID para novo pedido
-    const notificationId = await Notifications.scheduleNotificationAsync({
-      content: {
-        title: 'Novo pedido criado',
-        body: 'Seu pedido está aguardando',
-      },
-    });
-    setNotificationId(notificationId);
-    console.log("Token SMS: ", notificationId);
 
     await DataStore.save(
       new Pedido({
@@ -54,7 +30,7 @@ export default function Cart() {
         "vr_taxaentrega": parseFloat(delivery.taxa).toFixed(2),
         "vr_total": parseFloat(total).toFixed(2),
         "status": Status.NOVO,
-        "token_sms": notificationId,
+        "token_sms": "",
         "clienteID": user.id,
         "Items": cart,
         "Delivery": delivery, /* Provide a Delivery instance here */

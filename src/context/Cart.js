@@ -15,16 +15,18 @@ export default function CartProvider({ children }) {
   const [subtotal, setSubTotal] = useState(0);
 
   // update/refresh "basket"
+
   useEffect(() => {
     DataStore.query(
-      Basket, (b) => b.deliveryID.eq(delivery.id).userID.eq(user.id)).then((baskets) => setBasket(baskets[0])
+      Basket, (basket) => basket.clienteID.eq(user.id)).then((baskets) => setBasket(baskets[0])
     );
   }, [user, delivery]);
 
   // update/refresh "basketItens"
+  
   useEffect(() => {
     if (basket) {
-      DataStore.query(BasketItem, (bskdsh) => bskdsh.basketID.eq(basket.id)).then(setBasketItens);
+      DataStore.query(BasketItem, (itens) => itens.basketID.eq(basket.id)).then(setBasketItens);
     }
   }, [basket]);
 

@@ -1,5 +1,4 @@
 import 'react-native-gesture-handler';
-import { useEffect } from 'react';
 import { StatusBar, LogBox } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 
@@ -8,6 +7,7 @@ LogBox.ignoreLogs(['Warning: Async Storage has been extracted from react-native 
 
 import AuthProvider from './src/context/Auth';
 import CartProvider from './src/context/Cart';
+
 import Routes from './src/routes';
 
 import { Amplify } from "aws-amplify";

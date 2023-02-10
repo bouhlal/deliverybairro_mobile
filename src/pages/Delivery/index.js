@@ -63,7 +63,7 @@ export default function Delivery({ route }) {
     return (
       <View style={styles.page}>
         <Image
-          source={{ uri: !delivery.image ? DEFAULT_IMAGE : delivery.image }} 
+          source={{ uri: !delivery.url_imagem ? DEFAULT_IMAGE : delivery.url_imagem }} 
           style={styles.image} 
         />
         <View style={styles.container}>
@@ -184,23 +184,22 @@ const styles = StyleSheet.create({
   }
 });
 
-    // if (item.id) {
-    //   DataStore.query(Dish, item.id).then(setDish);
-    //   console.log('Delivery: ', delivery.name);
-    //   console.log("Dish: ", dish);
-    //   showModal(true);
-    // }
+/*
+  if (item.id) {
+    DataStore.query(Dish, item.id).then(setDish);
+    console.log('Delivery: ', delivery.name);
+    console.log("Dish: ", dish);
+    showModal(true);
+  }
 
-    {/* 
-      { basket && (
-        <TouchableOpacity onPress={() => navigation.navigate("Cesta de Compras")} style={styles.button}>
-          <Text style={styles.buttonText}>
-            Cesta de Compras ({ basketDishes.length })
-          </Text>
-        </TouchableOpacity>
-      )} 
-    */}
+  { basket && (
+    <TouchableOpacity onPress={() => navigation.navigate("Cesta de Compras")} style={styles.button}>
+      <Text style={styles.buttonText}>
+        Cesta de Compras ({ basketDishes.length })
+      </Text>
+    </TouchableOpacity>
+  )} 
 
-  {/* 
-    <TouchableOpacity onPress={() => LinkTo('Produtos', { id: delivery.id, nome: delivery.nome, horario: delivery.horario, imagem: delivery.url_imagem })}></TouchableOpacity> 
-  */}
+  <TouchableOpacity onPress={() => LinkTo('Produtos', { id: delivery.id, nome: delivery.nome, horario: delivery.horario, imagem: delivery.url_imagem })}></TouchableOpacity> 
+
+*/

@@ -12,16 +12,20 @@ export default function Deliveries({ route }) {
 
   const DEFAULT_IMAGE = "https://deliverybairro-storage-25990171215340-staging.s3.amazonaws.com/images/sem-imagem.png";
 
+  // const lista = await DataStore.query(Delivery, (delivery) => delivery.Categoria.eq(route.params?.id));
+  // setDeliveries(lista);
+
   useEffect(() => {
     (async function() {
       try {
-        DataStore.query(Delivery, (delivery) => delivery.Categoria.eq(route.params.id));
-        setDeliveries(lista);
+        const result = await DataStore.query(Delivery);
+        setDeliveries(result);
+        console.log(deliveries);
       } catch(error) {
         console.error("Error (query: Categoria): ", error);
       }
     })();
-  }, [route.params.id]);
+  }, [route.params?.id]);
 
   function LinkTo(page, p) {
     navigation.navigate(page, p);
@@ -36,10 +40,12 @@ export default function Deliveries({ route }) {
   }
 
   function DeliveryCard({ delivery }) {
+    console.log(delivery);
+
     return (
       <TouchableOpacity onPress={()=>LinkTo('Delivery', { id: delivery.id })}>
         <Image 
-          source={{ uri: !delivery.url_image ? DEFAULT_IMAGE : delivery.url_image }} 
+          source={{ uri: !delivery.url_imagem ? DEFAULT_IMAGE : delivery.url_imagem }} 
           style={styles.imagem} 
         />
         <View style={styles.row}>
