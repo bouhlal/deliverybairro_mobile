@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { StyleSheet, View, Image, Platform, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, Image, Platform, ActivityIndicator, Alert } from 'react-native';
 import { Background, Container, AreaInput, Input, BtnSubmit, BtnTxt, Link, LinkTxt } from './styles';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../context/Auth';
@@ -9,14 +9,15 @@ import marca from '../../../assets/logomarca.png';
 
 export default function SignUpCode({ route }) {
   const navigation = useNavigation();
-  
-  const [username, setUsername] = useState(route.params?.username);
+  const [email, setEmail] = useState(route.params?.email);
   const [code, setCode] = useState('');  
 
-  const { confirmSignUp, resendConfirmationCode, loading } = useContext(AuthContext);
-  
+  const { error, loading, confirmSignUp, resendConfirmationCode } = useContext(AuthContext);
+
+  /* Alert.alert("PARA TUDO!!! [SignUpCode]"); **/
+
   function SendCode() {
-    confirmSignUp(username, code);
+    confirmSignUp(email, code);
   }
 
   return (
@@ -27,30 +28,37 @@ export default function SignUpCode({ route }) {
         <Image source={marca} style={styles.mark} resizeMode="contain" />
 
         <AreaInput>
+          <Text>Informe o código de confirmação:</Text>
           <Input
-            placeholder='------'
-            autoCorrect={false}
-            autoCapitalize='none'
-            keyboardType='numeric'
             value={code}
+            placeholder='------'
+            autoCapitalize='none'
+            autoCorrect={false}
+            keyboardType='numeric'
             onChangeText={(text)=>setCode(text)}
+            onSubmitEditing={() => Keyboard.dismiss()}
+            secureTextEntry={false}
           />
         </AreaInput>
 
-        <BtnSubmit onPress={SendCode}>
+        <BtnSubmit onPress={()=>SendCode()}>
           {
             loading ? (
               <View style={styles.indicator}>
-                <ActivityIndicator size={"large"} color="#000" />
+                <ActivityIndicator size={"large"} color="#FF0000" />
               </View>
             ) : (
-              <BtnTxt>ENVIAR CÓDIGO</BtnTxt>
+              <BtnTxt>CONFIRMAR CÓDIGO</BtnTxt>
             )
           }
         </BtnSubmit>
 
+        {error && 
+          <Text>{error}</Text>
+        }
+
         <Link onPress={() => resendConfirmationCode}>
-          <LinkTxt>Reenviar Código de Confirmação?</LinkTxt>
+          <LinkTxt>Reenviar Código?</LinkTxt>
         </Link>
 
       </Container>

@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, FlatList, RefreshControl, SafeAreaView, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, FlatList, RefreshControl, Alert, SafeAreaView, ActivityIndicator, StyleSheet } from 'react-native';
 import { AuthContext } from '../../context/Auth';
 
 import { DataStore } from "aws-amplify";
 import { Pedido, Item } from "../../models";
-
 
 import Header from '../../components/Header';
 
@@ -13,6 +12,8 @@ export default function Pedidos({ route }) {
   const [ pedidos, setPedidos ] = useState([]);
 
   const flatlist = React.useRef(null);
+
+  // Alert.alert("PARA TUDO!!! [Pedidos]");
 
   useEffect(() => {
     DataStore.query(Pedido, (pedido) => pedido.userID.eq(user.id)).then(setPedidos);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, FlatList, TouchableOpacity, SafeAreaView, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, Image, FlatList, TouchableOpacity, Alert, SafeAreaView, ActivityIndicator, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { DataStore } from 'aws-amplify';
 import { Categoria } from '../../models';
@@ -9,6 +9,8 @@ import Header from '../../components/Header';
 export default function Home() {
   const navigation = useNavigation();
   const [categorias, setCategorias] = useState([]);
+
+  // Alert.alert("PARA TUDO!!! [Home]");
 
   useEffect(() => {
     (async function() {

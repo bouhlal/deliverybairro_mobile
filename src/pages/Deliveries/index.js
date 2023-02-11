@@ -12,6 +12,8 @@ export default function Deliveries({ route }) {
 
   const DEFAULT_IMAGE = "https://deliverybairro-storage-25990171215340-staging.s3.amazonaws.com/images/sem-imagem.png";
 
+  // Alert.alert("PARA TUDO!!! [Deliveries]");
+
   // const lista = await DataStore.query(Delivery, (delivery) => delivery.Categoria.eq(route.params?.id));
   // setDeliveries(lista);
 

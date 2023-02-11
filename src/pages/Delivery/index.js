@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, FlatList, Modal, SafeAreaView, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, FlatList, Alert, Modal, SafeAreaView, ActivityIndicator } from "react-native";
 import { CartContext } from "../../context/Cart";
 import { DataStore } from "aws-amplify";
 import { Delivery, Produto } from "../../models";
@@ -17,6 +17,8 @@ export default function Delivery({ route }) {
   const [show, showModal] = useState(false);
 
   const DEFAULT_IMAGE = "https://deliverybairro-storage-25990171215340-staging.s3.amazonaws.com/images/sem-imagem.png";
+
+  // Alert.alert("PARA TUDO!!! [Delivery]");
 
   console.warn('Delivery ID: ', route.params?.id);
 

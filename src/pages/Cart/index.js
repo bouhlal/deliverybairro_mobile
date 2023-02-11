@@ -16,6 +16,8 @@ export default function Cart() {
   const [ courier, setCourier] = useState(null); 
   const [ total, setTotal ] = useState(0);
 
+  // Alert.alert("PARA TUDO!!! [Cart]");
+
   useEffect(() => {
     let soma = parseFloat(subtotal) + parseFloat(delivery.taxa);
     setTotal(soma);
@@ -30,7 +32,7 @@ export default function Cart() {
         "vr_taxaentrega": parseFloat(delivery.taxa).toFixed(2),
         "vr_total": parseFloat(total).toFixed(2),
         "status": Status.NOVO,
-        "token_sms": "",
+        "token_sms": user.sub,
         "clienteID": user.id,
         "Items": cart,
         "Delivery": delivery, /* Provide a Delivery instance here */

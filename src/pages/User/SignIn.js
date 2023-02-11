@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { StyleSheet, View, Image, Platform, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, Image, Platform, ActivityIndicator, Alert } from 'react-native';
 import { Background, Container, AreaInput, Input, BtnSubmit, BtnTxt, Link, LinkTxt } from './styles';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../context/Auth';
@@ -7,16 +7,19 @@ import { AuthContext } from '../../context/Auth';
 import logo from '../../../assets/logo.png';
 import marca from '../../../assets/logomarca.png';
 
-export default function SignInCode() {
+export default function SignIn() {
   const navigation = useNavigation();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');  
 
-  const { signIn, loading } = useContext(AuthContext);
+  const { signIn, error, loading } = useContext(AuthContext);
 
   function login() {
     signIn(email, password);
   }
+
+  /* Alert.alert(`STOP!!! [SignIn] (${email}) `); **/
 
   return (
     <Background>
@@ -26,23 +29,26 @@ export default function SignInCode() {
         <Image source={marca} style={styles.mark} resizeMode="contain" />
 
         <AreaInput>
+          <Text>Email:</Text>
           <Input
-            placeholder='Email'
-            autoCorrect={false}
-            autoCapitalize='none'
             value={email}
-            onChangeText={(text)=>setEmail(text)}
+            placeholder='username@email.com'
+            autoCapitalize='none'
+            autoCorrect={false}
+            onChangeText={(input)=>setEmail(input)}
           />
         </AreaInput>
 
         <AreaInput>
+          <Text>Senha:</Text>
           <Input
-            placeholder='Senha'
-            autoCorrect={false}
-            autoCapitalize='none'
-            keyboardType='numeric'
             value={password}
-            onChangeText={(text)=>setPassword(text)}
+            placeholder='Senha'
+            autoCapitalize='none'
+            autoCorrect={false}
+            keyboardType='numeric'
+            onChangeText={(input)=>setPassword(input)}
+            // onSubmitEditing={() => Keyboard.dismiss()}
             secureTextEntry={true}
           />
         </AreaInput>
@@ -54,10 +60,14 @@ export default function SignInCode() {
                 <ActivityIndicator size={"large"} color="#000" />
               </View>
             ) : (
-              <BtnTxt>Acessar</BtnTxt>
+              <BtnTxt>ACESSAR</BtnTxt>
             )
           }
         </BtnSubmit>
+
+        {error && 
+          <Text>{error}</Text>
+        }
 
         <Link onPress={() => navigation.navigate('SignUp')}>
           <LinkTxt>Ainda não possui Conta? Junte-se a Nós!</LinkTxt>

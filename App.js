@@ -1,13 +1,10 @@
 import 'react-native-gesture-handler';
 import { StatusBar, LogBox } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-
-LogBox.ignoreLogs(['AsyncStorage has been extracted from react-native core and will be removed in a future release.']);
-LogBox.ignoreLogs(['Warning: Async Storage has been extracted from react-native core']);
+import { withAuthenticator } from 'aws-amplify-react-native';
 
 import AuthProvider from './src/context/Auth';
 import CartProvider from './src/context/Cart';
-
 import Routes from './src/routes';
 
 import { Amplify } from "aws-amplify";
@@ -20,7 +17,10 @@ Amplify.configure({
   },
 });
 
-export default function App() {
+LogBox.ignoreLogs(['AsyncStorage has been extracted from react-native core and will be removed in a future release.']);
+LogBox.ignoreLogs(['Warning: Async Storage has been extracted from react-native core']);
+
+function App() {
   return (
     <NavigationContainer>
       <AuthProvider>
@@ -32,6 +32,8 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
+export default withAuthenticator(App);
 
 // import { withAuthenticator } from "aws-amplify-react-native/dist/Auth";
 // import OrderProvider from "./src/context/Order"

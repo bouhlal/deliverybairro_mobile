@@ -14,7 +14,7 @@ export default function CartProvider({ children }) {
   const [cart, setCart] = useState([]);
   const [subtotal, setSubTotal] = useState(0);
 
-  // update/refresh "basket"
+  console.log("User: ", user);
 
   useEffect(() => {
     DataStore.query(
@@ -22,8 +22,6 @@ export default function CartProvider({ children }) {
     );
   }, [user, delivery]);
 
-  // update/refresh "basketItens"
-  
   useEffect(() => {
     if (basket) {
       DataStore.query(BasketItem, (itens) => itens.basketID.eq(basket.id)).then(setBasketItens);
@@ -58,7 +56,7 @@ export default function CartProvider({ children }) {
 
   async function CreateNewBasket() {
     const NewBasket = await DataStore.save(
-      new Basket({ userID: user.id, deliveryID: delivery_info.id })
+      new Basket({ userID: user.id, deliveryID: delivery.id })
     );
     setBasket(NewBasket);
     return NewBasket;

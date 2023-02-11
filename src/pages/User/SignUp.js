@@ -1,5 +1,5 @@
 import React, {useState, useContext} from 'react';
-import { StyleSheet, View, Image, Text, Keyboard, Alert, Platform } from 'react-native';
+import { StyleSheet, View, Text, Image, Keyboard, Alert, Platform } from 'react-native';
 import { Background, Container, AreaInput, Input, BtnSubmit, BtnTxt, Link, LinkTxt } from './styles';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../context/Auth';
@@ -7,12 +7,14 @@ import { AuthContext } from '../../context/Auth';
 import logo from '../../../assets/logo.png';
 import marca from '../../../assets/logomarca.png';
 
-export default function SignUp1() {
+export default function SignUp() {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const { signUp, loading } = useContext(AuthContext);
+  const { signUp, error, loading } = useContext(AuthContext);
+
+  /* Alert.alert("PARA TUDO!!! [SignUp]"); **/
 
   function checkEmptyField(field){
     if(field.trim()==='') {
@@ -25,16 +27,12 @@ export default function SignUp1() {
   function RegisterUser(){
     const vEmail = checkEmptyField(email);
     const vPassword = checkEmptyField(password);
-
     if(!vEmail || !vPassword) {
-      alert('Dados obrigatórios');
+      alert('Preencha todos os campos!');
     } else {
-      signUp(
-        email.trim(),
-        password.trim()
-      );
+      signUp(email.trim(), password.trim());
       Alert.alert("Atenção","Um código de confirmação foi enviado para o seu e-mail.");
-      navigation.navigate('SignUpCode', {username: email, code: ""});
+      navigation.navigate('SignUpCode', {email: email});
     }
   }
 
@@ -45,30 +43,31 @@ export default function SignUp1() {
         <View style={styles.header}>
           <Image source={logo} style={styles.logo} resizeMode="contain" />
           <Image source={marca} style={styles.mark} resizeMode="contain" />
-          <Text style={styles.title}>Seja bem vindo!</Text>
           <Text style={styles.subtitle}>Cadastre-se, é simples e rápido!</Text>
         </View>
 
         <AreaInput>
+          <Text>Email:</Text>
           <Input
-            placeholder="Email"
-            autoCorrect={false}
-            autoCapitalize="none"
             value={email}
-            onChangeText={(text) => setEmail(text)}
+            placeholder='username@email.com'
+            autoCapitalize='none'
+            autoCorrect={false}
+            onChangeText={(input)=>setEmail(input)}
           />
         </AreaInput>
 
         <AreaInput>
+          <Text>Senha:</Text>
           <Input
-            placeholder="Senha"
-            autoCorrect={false}
-            autoCapitalize="none"
             value={password}
-            secureTextEntry={true}
+            placeholder='Senha'
+            autoCapitalize='none'
+            autoCorrect={false}
             keyboardType='numeric'
-            onChangeText={(text) => setPassword(text)}
+            onChangeText={(input)=>setPassword(input)}
             onSubmitEditing={() => Keyboard.dismiss()}
+            secureTextEntry={true}
           />
         </AreaInput>
 
@@ -78,19 +77,23 @@ export default function SignUp1() {
           </Text>
         </View>
 
-        <BtnSubmit onPress={() => navigation.navigate('SignUpCode')}>
+        <BtnSubmit onPress={()=>RegisterUser()}>
           {
             loading ? (
               <View style={styles.indicator}>
                 <ActivityIndicator size={"large"} color="#4DCE4D" />
               </View>
             ) : (
-              <BtnTxt>Registrar Usuário</BtnTxt>
+              <BtnTxt>REGISTRAR USUÁRIO</BtnTxt>
             )
           }
         </BtnSubmit>
 
-        <Link onPress={() => navigation.navigate('SignIn')}>
+        {error && 
+          <Text>{error}</Text>
+        }
+
+        <Link onPress={()=>navigation.navigate('SignIn')}>
           <LinkTxt>Já tenho uma Conta!</LinkTxt>
         </Link>
 

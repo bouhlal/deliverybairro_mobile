@@ -22,7 +22,7 @@ export default function Header(props) {
       <View style={styles.header}>
         <TouchableOpacity 
           onPress={()=> {
-            alert("DeliveryBairro App v1.0 Build #21 " + '\n' + "psi-software (31) 98410-7540");
+            alert("DeliveryBairro App v1.0 Build #21 "+'\n'+"(31) 98410-7540");
           }}
         >
           <Image source={logo} style={{ width: 85, height: 85 }} resizeMode="contain" />
@@ -31,7 +31,7 @@ export default function Header(props) {
           <Image source={logomarca} style={{ width: 195, height: 85 }} resizeMode="contain" />
         </View>
 
-        <TouchableOpacity onPress={()=>GoToLink('Cesta')}>
+        <TouchableOpacity onPress={()=>GoToLink('Cart')}>
           <Image source={sacola} style={{ width: 85, height: 85 }} resizeMode="contain" />
           { cart.length >= 1 &&
             <View style={styles.dot}>

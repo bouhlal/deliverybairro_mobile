@@ -25,6 +25,8 @@ export default function Produtos({ route }) {
 
   const [show, showModal] = useState(false);
 
+  // Alert.alert("PARA TUDO!!! [Produtos]");
+
   useEffect(() => {
     loadProdutos();
     loadInfo();

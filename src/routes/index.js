@@ -1,13 +1,26 @@
 import React, { useContext } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { AuthContext } from '../context/Auth';
-
-import AuthRoutes from './Auth.Routes';
 import AppRoutes from './App.Routes';
 
-function Routes() {
+export default function Routes() {
+  return(
+    <AppRoutes />
+  )
+}
 
+/*
+  import { View, ActivityIndicator, StyleSheet, Alert } from 'react-native';
+  import { AuthContext } from '../context/Auth';
+ 
+  import AuthRoutes from './Auth.Routes';
+
+  const { user } = useContext(AuthContext);
   const { signed, loading } = useContext(AuthContext);
+
+  console.log('User:', user);
+
+  user ? <AppRoutes/> : <AuthRoutes/> 
+
+  // Alert.alert(`STOP!!! [SignIn] (${signed}) `); 
 
   if (signed) {
     return(
@@ -20,13 +33,6 @@ function Routes() {
       </View>
     )
   }
-
-  return(
-    signed ? <AppRoutes/> : <AuthRoutes/> 
-  )
-}
-
-export default Routes;
 
 const styles = StyleSheet.create({
   container:{
@@ -45,3 +51,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   }
 })
+
+**/
