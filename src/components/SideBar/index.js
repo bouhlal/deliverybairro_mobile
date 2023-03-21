@@ -23,7 +23,9 @@ export default function SideBar(props) {
       <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 25 }}>
         <Image source={logotipo} style={{ width: 120, height: 120 }} resizeMode="contain" />
         <Text style={{ color: '#5D5D5D', fontSize: 18, marginTop: 25 }}>Bem vindo!</Text>
-        {/* <Text style={{ color: '#000', fontSize: 17, fontWeight: 'bold'}}>{user.email}</Text> */}
+        <Text style={{ color: '#000', fontSize: 17, fontWeight: 'bold'}}>{user.nome} {user.sobrenome}</Text>
+        <Text style={{ color: '#55A9D6', fontSize: 17, fontWeight: 'bold'}}>ID #{user.id_cliente}</Text>
+        <Text style={{ color: '#FF0000', fontSize: 10, marginBottom: 25 }}>{user.token}</Text>
       </View>
 
       <DrawerItem
@@ -38,7 +40,7 @@ export default function SideBar(props) {
         )}
       />
       <DrawerItem
-        label="MINHAS COMPRAS (Pedidos)"
+        label="PEDIDOS (Compras)"
         onPress={() => GoToLink('Pedidos')}
         activeTintColor='#FFF'
         activeBackgroundColor='#FF0000'
@@ -49,7 +51,7 @@ export default function SideBar(props) {
         )}
       />
       <DrawerItem
-        label="USUÁRIO (Perfil)"
+        label="PERFIL (Usuário)"
         onPress={() => GoToLink('Perfil')}
         activeTintColor='#FFF'
         activeBackgroundColor='#FF0000'

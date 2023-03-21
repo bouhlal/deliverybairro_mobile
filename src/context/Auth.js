@@ -1,115 +1,138 @@
 import React, { useState, useEffect, createContext } from 'react';
-import { Auth, DataStore } from "aws-amplify";
-import { Cliente } from "../models";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import api from '../services/api';
+import firebase from '../services/config';
 
 export const AuthContext = createContext({});
 
-export default function AuthProvider({ children }) {
-  const [user_authorized, setAuthorized] = useState(null);
+function AuthProvider({ children }) {
+  const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
+  const [usr_token, setUsrToken] = useState('');
+  const [notify, setNotify] = useState('');
 
-  const sub = user_authorized?.attributes?.sub; 
-
-  useEffect(() => {
-    Auth.currentAuthenticatedUser({ bypassCache: true }).then(setAuthorized);
-  }, [])
-
-  useEffect(() => {
-    DataStore.query(Cliente, (cliente) => cliente.token_sms.eq(sub)).then((clientes) =>
-      setUser(clientes[0])
-    );
-  }, [sub]);
-
-  async function signOut() {
-    try {
-      await Auth.signOut();
-    } catch (error) {
-      console.error('Error (signOut): ', error);
-      setError(error.message);
-    }
+  function GetTOKEN(token) {
+    // let data = {
+    //   uid: user.uid,
+    //   email: user.email,
+    //   id_cliente: user.id_cliente,
+    //   nome: user.nome,
+    //   sobrenome: user.sobrenome,
+    //   token: usr_token
+    // }
+    // console.log(data);
+    // setUser(data);
+    // storageUser(data);
+    setUsrToken(token);
   }
 
-  return (
-    <AuthContext.Provider value={{ user, user_authorized, sub, setUser, signOut }}>
-      { children }
-    </AuthContext.Provider>
-  );
-};
+  function GetNOTIFICATION(notification) {
+    setNotify(notification);
+  }
 
-//   return(
-//     <AuthContext.Provider value={{ 
-//       signed: !!user, user, error, loading,
-//       signIn, signUp, signOut, confirmSignUp, resendConfirmationCode
-//     }}>
-//       { children }
-//     </AuthContext.Provider> 
-//   )
-// }
+  useEffect(() => {
+    async function loadStorage() {
+      const storageUser = await AsyncStorage.getItem('Auth_user');
+      if (storageUser) {
+        setUser(JSON.parse(storageUser));
+      }
+    }
+    loadStorage();
+  }, []);
 
-/*
-  import { Alert } from 'react-native';
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  // Logar o Usuário
 
   async function signIn(email, password) {
     setLoading(true);
-    try {
-      const user = await Auth.signIn({username: email, password: password});
-      console.log("usuário logado: ", user); setUser(user);
-    } catch (error) {
-        console.log('Error (signIn): ', error);
-        setError(error.message);
-    }
-    setLoading(false);
-  };
-
-  async function signUp( email, password ) {
-    setLoading(true);
-    try {
-      const user = await Auth.signUp({ 
-        username: email, 
-        password: password,
-        autoSignIn: {
-          email: email,
+    console.log(email, password);
+    firebase.auth().signInWithEmailAndPassword(email, password)
+    .then(async(value) => {
+      await firebase.database().ref('users').child(value.user.uid).once('value')
+      .then((snapshot) => {
+        let data = {
+          uid: value.user.uid,
+          email: value.user.email,
+          id_cliente: snapshot.val().id_cliente,
+          nome: snapshot.val().nome,
+          sobrenome: snapshot.val().sobrenome,
+          token: snapshot.val().token
         }
-      });
-      console.log("user signed up:", user);
-      setUser(user);
-    } catch (error) {
-      console.error('Error (singUp): ', error);
-      setError(error.message);
-    }
+        // console.log(data);
+        storageUser(data);
+        setUser(data);
+      })
+    }).catch((error) => {
+      alert('Error: '+error.code);
+    })
     setLoading(false);
   }
 
-  async function confirmSignUp(email, code) {
-    try {
-      await Auth.confirmSignUp(email, code, { forceAliasCreation: false });
-    } catch (error) {
-      console.log('Error (Confirming signUp): ', error);
-      setError(error.message);
+  // Cadastrar Usuário
+
+  async function signUp(nome, sobrenome, endereco, complemento, bairro, cidade, UF, CEP, telefone, email, password) {
+    setLoading(true);
+    const json = {
+      "id_cliente": null, 
+      "nome": nome, "sobrenome": sobrenome,
+      "endereco": endereco, "complemento": complemento, "bairro": bairro, "cidade": cidade, "uf": UF, "cep": CEP,
+      "telefone": telefone, "email": email, 
+      "cnpj": "", "cpf": "", "token": token
     }
+    await api.post('/cliente/add/', json).then(response => {
+      console.log(response);
+      firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then(async (value) => {
+          let uid = value.user.uid;
+          await firebase.database().ref('users').child(uid).set({
+            nome: json.nome,
+            sobrenome: json.sobrenome,
+            id_cliente: response.val().id_cliente,
+            token: response.val().token
+          }).then((snapshot) => {
+            let data = {
+              uid: value.user.uid,
+              email: value.user.email,
+              id_cliente: snapshot.val().id_cliente,
+              nome: snapshot.val().nome,
+              sobrenome: snapshot.val().sobrenome,
+              token: snapshot.val().token
+            };
+            setUser(data);
+            storageUser(data);
+            console.log(data);
+          }).catch((error) => {
+            console.log('ERROR: ' + error);
+          })
+      }).catch(error => {
+        console.log('ERROR: ' + error);
+      })
+    });
+
+    setLoading(false);
   }
 
-  async function resendConfirmationCode(email) {
-      try {
-        await Auth.resendSignUp(email);
-        Alert.alert("Info","Código reenviado com sucesso!");
-        console.log('code resent successfully');
-      } catch (error) {
-        console.log('Error (resending code): ', error);
-        setError(error.message);
-      }
+  async function storageUser(data) {
+    await AsyncStorage.setItem('Auth_user', JSON.stringify(data));
   }
+
+  // Deslogar Usuário
 
   async function signOut() {
-    try {
-      await Auth.signOut();
-    } catch (error) {
-      console.error('Error (signOut): ', error);
-      setError(error.message);
-    }
+    await firebase.auth().signOut();
+    await AsyncStorage.clear().then(() => {
+      setUser(null);
+    })
   }
 
-**/
+  return(
+    <AuthContext.Provider value={{ 
+      signed: !!user, user, loading, usr_token, notify,
+      signIn, signUp, signOut, GetTOKEN, GetNOTIFICATION
+    }}>
+      { children }
+    </AuthContext.Provider> 
+  )
+}
+
+export default AuthProvider;

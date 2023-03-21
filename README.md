@@ -36,13 +36,3 @@ https://expo.dev/artifacts/eas/fByfzoZUQava4UaUjLChQa.apk
 <p>email: ezequiasmartins@gmail.com</p>
 <p>by <a href="https://ezequiasmartins.blogspot.com/" target="_blank">Ezequias Martins</a> ® 1999-2022 Direitos Reservados</p>
 <p><a href="https://ezequiasmartins.blogspot.com/" target="_blank"><img src=".temp/assinatura.jpg"></a></p>
-
-chat with Open AI
-https://chat.openai.com/auth/login
-
-Dorothy L. Sayers - "As Ferramentas Perdidas da Aprendizagem"
-
-Stephen E. Ambrose
-Band of Brothers (Compahia de Heróis)
-
-

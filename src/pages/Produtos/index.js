@@ -25,8 +25,6 @@ export default function Produtos({ route }) {
 
   const [show, showModal] = useState(false);
 
-  // Alert.alert("PARA TUDO!!! [Produtos]");
-
   useEffect(() => {
     loadProdutos();
     loadInfo();
@@ -169,7 +167,7 @@ export default function Produtos({ route }) {
           ListEmptyComponent={() => <Text style={styles.empty}>Ainda não há produtos deste Delivery!</Text>}
           renderItem={({item}) => <Product data={item} AddItemToCart={()=>SelecionaItem(item)} />}
         />
-      </View>a
+      </View>
       { 
         loading && 
         <View style={{flex:1, position: 'absolute', backgroundColor: '#000', opacity: 0.7, width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center'}}>

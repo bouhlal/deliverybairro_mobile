@@ -1,56 +1,51 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { AuthContext } from '../../context/Auth';
 import { CartContext } from '../../context/Cart';
-
-import { DataStore } from "aws-amplify";
-import { Pedido, Item } from "../../models";
+import { useNavigation } from '@react-navigation/native';
 
 import CardItem from '../../components/Card';
 
-export default function Cart() {
+import api from '../../services/api';
+
+export default function Cesta() {
   const navigation = useNavigation();
-  const { cart, delivery, basket, basketItens, subtotal, setDelivery, cleanCart, AddToCart, RemoveFromCart } = useContext(CartContext);
-  const { user } = useContext(AuthContext);
-  const [ courier, setCourier] = useState(null); 
+  const { cart, info, subtotal, cleanCart, AddToCart, RemoveFromCart } = useContext(CartContext);
+  const { user, usr_token, GetTOKEN } = useContext(AuthContext);
   const [ total, setTotal ] = useState(0);
 
-  // Alert.alert("PARA TUDO!!! [Cart]");
-
   useEffect(() => {
-    let soma = parseFloat(subtotal) + parseFloat(delivery.taxa);
+    let soma = parseFloat(subtotal) + parseFloat(info.taxa);
     setTotal(soma);
   }, [subtotal]);
 
   async function EnviarPedido() {
 
-    await DataStore.save(
-      new Pedido({
-        "dt_pedido": new Date(),
-        "vr_subtotal": parseFloat(subtotal).toFixed(2),
-        "vr_taxaentrega": parseFloat(delivery.taxa).toFixed(2),
-        "vr_total": parseFloat(total).toFixed(2),
-        "status": Status.NOVO,
-        "token_sms": user.sub,
-        "clienteID": user.id,
-        "Items": cart,
-        "Delivery": delivery, /* Provide a Delivery instance here */
-        "Courier": courier /* Provide a Courier instance here */
-      })
-    ).then((pedido) => {
-      alert('Pedido enviado com sucesso! #' + pedido.id);
-      console.log(pedido);
+    if (usr_token ==='' || !usr_token) {
+      alert('Erro! Verifique o Token de Usuário: ', usr_token);
+      return;
+    }
+
+    let json = {
+      "id_conta": info.id,
+      "id_cliente": user.id_cliente,
+      "vr_subtotal": parseFloat(subtotal).toFixed(2),
+      "vr_taxaentrega": parseFloat(info.taxa).toFixed(2),
+      "vr_total": parseFloat(total).toFixed(2),
+      "token": usr_token,
+      "itens": cart
+    }
+    console.log(json);
+    await api.post('/pedidos/add', json)
+    .then((response) => {
+      console.log(response.data);
+      alert('Pedido enviado com sucesso! #' + response.data.id_pedido);
       cleanCart();
       GoToLink('Pedidos');
     }).catch(error => {
       console.log('ERROR: ' + error);
     })
   }
-
-  // function EnviarPedido() {
-  //   Alert.alert("Envia pedido para o Delivery...")
-  // }
 
   function CancelarPedido() {
     cleanCart();
@@ -77,7 +72,7 @@ export default function Cart() {
       <FlatList
         data={cart}
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item)=>String(item.id)}
+        keyExtractor={(item)=>String(item.id_produto)}
         ListEmptyComponent={() => <Text style={styles.empty}>Carrinho de Compras vazio!</Text>}
         renderItem={({item})=>(
           <CardItem
@@ -91,7 +86,6 @@ export default function Cart() {
             <Text style={styles.subtotal}>Sub-Total: R$ {parseFloat(subtotal).toFixed(2)}</Text>
             <Text style={styles.taxa}>Taxa de Entrega: R$ {parseFloat(info.taxa).toFixed(2)}</Text>
             <Text style={styles.total}>Total: R$ {parseFloat(total).toFixed(2)}</Text>
-            <Text>ID da notificação: {notificationId}</Text>
           </View>
         )}
       />

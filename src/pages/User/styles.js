@@ -8,8 +8,8 @@ export const Background=styled(View)`
 
 export const Container=styled(KeyboardAvoidingView)`
   flex: 1;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 `;
 
 export const Logo=styled(Image)`
@@ -27,13 +27,12 @@ export const AreaInput=styled(View)`
 `;
 
 export const Input = styled(TextInput).attrs({placeholderTextColor: '#8CB8D2'})`
-  width: 90%;
-  height: 40px;
   background-color: #FFF;
+  width: 90%;
   font-size: 17px;
   color: #000;
   padding: 10px;
-  border-color: gray;
+  border-color: #000;
   border-width: 1px;
   border-radius: 7px;
 `;

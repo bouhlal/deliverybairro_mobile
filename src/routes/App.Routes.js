@@ -6,10 +6,10 @@ import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { FontAwesome5, Fontisto, Entypo } from '@expo/vector-icons';
 
 import Home from '../pages/Home';
-import Deliveries from '../pages/Deliveries';
+import Deliverys from '../pages/Deliverys';
 import Produtos from '../pages/Produtos';
 import Pedidos from '../pages/Pedidos';
-import Cart from '../pages/Cart';
+import Cesta from '../pages/Cesta';
 import Perfil from '../pages/Perfil';
 
 import SideBar from '../components/SideBar';
@@ -67,10 +67,10 @@ export default function AppRoutes() {
     const getHeaderTitle = (route) => {
       const routeName = getFocusedRouteNameFromRoute(route) ?? 'Home';
       switch (routeName) {
-        case "Home": return "Categoria";
-        case "Deliveries": return "Delivery";
-        case "Pedidos": return "Pedidos";
-        case "Perfil": return "Perfil";
+        case 'Home': return 'Categorias (Home)';
+        case 'Deliverys': return 'Deliverys (Perto de Você)'
+        case 'Cesta': return 'Cesta de Compras';
+        case 'Perfil': return 'Perfil (Usuário)';
       }
     };
 
@@ -145,8 +145,8 @@ export default function AppRoutes() {
       />
 
       <Stack.Screen
-        name="Deliveries"
-        component={ Deliveries }
+        name="Deliverys"
+        component={ Deliverys }
         options={() => ({
           headerShown: true,
           headerTitle: 'Deliverys por Categoria',
@@ -173,11 +173,11 @@ export default function AppRoutes() {
       />
 
       <Stack.Screen
-        name="Cart"
-        component={ Cart }
+        name="Cesta"
+        component={ Cesta }
         options={() => ({
           headerShown: true,
-          headerTitle: 'Minha Cesta de Compras',
+          headerTitle: 'Carrinho de Compras',
           headerTintColor: '#FFF',
           headerStyle: {
             backgroundColor: '#000',
